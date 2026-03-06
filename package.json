@@ -1,0 +1,32 @@
+{
+  "name": "maldives-table-booking",
+  "private": true,
+  "packageManager": "pnpm@9.12.3",
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "db:migrate": "pnpm --filter @mtb/api prisma:migrate",
+    "db:seed": "pnpm --filter @mtb/api prisma:seed",
+    "build": "pnpm --filter @mtb/api build && pnpm --filter @mtb/web build",
+    "start": "node server.mjs",
+    "heroku-postbuild": "pnpm --filter @mtb/api prisma:generate && pnpm --filter @mtb/api build && pnpm --filter @mtb/web build"
+  },
+  "engines": {
+    "node": "20.x"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "next": "^14.2.5",
+    "cookie-parser": "^1.4.6",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.4.0",
+    "pino-http": "^10.2.0",
+    "pino": "^9.3.2"
+  }
+}

@@ -1,0 +1,76 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+
+enum Role { SUPERADMIN RESTAURANT_ADMIN }
+enum MenuType { MAIN DRINKS DESSERT }
+enum ReservationStatus { CONFIRMED CANCELLED }
+
+enum UploadStatus { CREATED UPLOADED PENDING_SCAN CLEAN QUARANTINED }
+
+model Restaurant {
+  id String @id @default(cuid())
+  name String
+  slug String @unique
+  timezone String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  memberships Membership[]
+  menus Menu[]
+  reservations Reservation[]
+}
+
+model User {
+  id String @id @default(cuid())
+  email String @unique
+  passwordHash String
+  createdAt DateTime @default(now())
+  memberships Membership[]
+}
+
+model Membership {
+  id String @id @default(cuid())
+  role Role
+  userId String
+  restaurantId String?
+  user User @relation(fields: [userId], references: [id])
+  restaurant Restaurant? @relation(fields: [restaurantId], references: [id])
+  @@index([userId])
+  @@index([restaurantId])
+}
+
+model Menu {
+  id String @id @default(cuid())
+  restaurantId String
+  type MenuType
+  content String @default("")
+  isPublished Boolean @default(false)
+  version Int @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  pdf MenuPdf?
+  @@unique([restaurantId, type])
+}
+
+model MenuPdf {
+  id String @id @default(cuid())
+  menuId String @unique
+  objectKey String
+  status UploadStatus @default(CREATED)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  menu Menu @relation(fields: [menuId], references: [id])
+}
+
+model Reservation {
+  id String @id @default(cuid())
+  restaurantId String
+  time DateTime
+  partySize Int
+  guestName String
+  guestContact String
+  status ReservationStatus @default(CONFIRMED)
+  createdAt DateTime @default(now())
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  @@index([restaurantId, time])
+}
