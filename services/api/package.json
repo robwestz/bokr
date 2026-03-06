@@ -14,7 +14,7 @@
     "start": "node dist/index.js",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:generate": "prisma generate",
-    "bootstrap": "node prisma/bootstrap.mjs"
+    "bootstrap": "prisma generate && node prisma/bootstrap.mjs"
   },
   "dependencies": {
     "@mtb/shared": "workspace:*",
