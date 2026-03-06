@@ -15,7 +15,7 @@
     "db:seed": "pnpm --filter @mtb/api prisma:seed",
     "build": "pnpm --filter @mtb/api build && pnpm --filter @mtb/web build",
     "start": "node server.mjs",
-    "heroku-postbuild": "pnpm --filter @mtb/api prisma:generate && pnpm --filter @mtb/api build && pnpm --filter @mtb/web build"
+    "heroku-postbuild": "pnpm --filter @mtb/shared build && pnpm --filter @mtb/api prisma:generate && pnpm --filter @mtb/api build && pnpm --filter @mtb/web build"
   },
   "engines": {
     "node": "20.x"
