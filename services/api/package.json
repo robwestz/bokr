@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@mtb/shared": "workspace:*",
-    "@prisma/client": "^5.19.0",
+    "@prisma/client": "5.19.0",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -40,7 +40,7 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.11.30",
     "eslint": "^9.8.0",
-    "prisma": "^5.19.0",
+    "prisma": "5.19.0",
     "tsx": "^4.19.0",
     "typescript": "^5.5.4",
     "vitest": "^2.0.5"

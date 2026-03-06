@@ -1,11 +1,35 @@
-generator client { provider = "prisma-client-js" }
-datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+generator client {
+  provider = "prisma-client-js"
+}
 
-enum Role { SUPERADMIN RESTAURANT_ADMIN }
-enum MenuType { MAIN DRINKS DESSERT }
-enum ReservationStatus { CONFIRMED CANCELLED }
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
-enum UploadStatus { CREATED UPLOADED PENDING_SCAN CLEAN QUARANTINED }
+enum Role {
+  SUPERADMIN
+  RESTAURANT_ADMIN
+}
+
+enum MenuType {
+  MAIN
+  DRINKS
+  DESSERT
+}
+
+enum ReservationStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+enum UploadStatus {
+  CREATED
+  UPLOADED
+  PENDING_SCAN
+  CLEAN
+  QUARANTINED
+}
 
 model Restaurant {
   id String @id @default(cuid())

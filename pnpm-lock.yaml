@@ -92,8 +92,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
       '@prisma/client':
-        specifier: ^5.19.0
-        version: 5.22.0(prisma@5.22.0)
+        specifier: 5.19.0
+        version: 5.19.0(prisma@5.22.0)
       bcryptjs:
         specifier: ^2.4.3
         version: 2.4.3
@@ -736,8 +736,8 @@ packages:
   '@pinojs/redact@0.4.0':
     resolution: {integrity: sha512-k2ENnmBugE/rzQfEcdWHcCY+/FM3VLzH9cYEsbdsoqrvzAKRhUZeRNhAZvB8OitQJ1TBed3yqWtdjzS6wJKBwg==}
 
-  '@prisma/client@5.22.0':
-    resolution: {integrity: sha512-M0SVXfyHnQREBKxCgyo7sffrKttwE6R8PMq330MIUF0pTwjUhLbW84pFDlf06B27XyCR++VtjugEnIHdr07SVA==}
+  '@prisma/client@5.19.0':
+    resolution: {integrity: sha512-CzOpau+q1kEWQyoQMvlnXIHqPvwmWbh48xZ4n8KWbAql0p8PC0BIgSTYW5ncxXa4JSEff0tcoxSZB874wDstdg==}
     engines: {node: '>=16.13'}
     peerDependencies:
       prisma: '*'
@@ -2873,7 +2873,7 @@ snapshots:
 
   '@pinojs/redact@0.4.0': {}
 
-  '@prisma/client@5.22.0(prisma@5.22.0)':
+  '@prisma/client@5.19.0(prisma@5.22.0)':
     optionalDependencies:
       prisma: 5.22.0
 
