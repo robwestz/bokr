@@ -1,2 +1,2 @@
 release: pnpm --filter @mtb/api prisma:migrate:deploy
-web: node server.mjs
+web: pnpm --filter @mtb/api prisma:generate && node server.mjs
