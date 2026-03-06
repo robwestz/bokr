@@ -3,7 +3,17 @@ import type { Membership } from "@prisma/client";
 import { prisma } from "../prisma";
 import { verifySession } from "./jwt";
 
-export type AuthedRequest = Request & { user?: { id: string; email: string }; roles?: string[]; restaurantIds?: string[] };
+declare global {
+  namespace Express {
+    interface Request {
+      user?: { id: string; email: string };
+      roles?: string[];
+      restaurantIds?: string[];
+    }
+  }
+}
+
+export type AuthedRequest = Request;
 
 export async function authMiddleware(req: AuthedRequest, _res: Response, next: NextFunction) {
   const token = (req as any).cookies?.session;

@@ -41,6 +41,23 @@ model Restaurant {
   memberships Membership[]
   menus Menu[]
   reservations Reservation[]
+  sittings Sitting[]
+}
+
+model Sitting {
+  id String @id @default(cuid())
+  restaurantId String
+  label String
+  startTime String
+  endTime String
+  maxCapacity Int
+  dayOfWeek Int?
+  specificDate DateTime?
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  @@index([restaurantId])
 }
 
 model User {
@@ -94,6 +111,7 @@ model Reservation {
   guestName String
   guestContact String
   status ReservationStatus @default(CONFIRMED)
+  idempotencyKey String? @unique
   createdAt DateTime @default(now())
   restaurant Restaurant @relation(fields: [restaurantId], references: [id])
   @@index([restaurantId, time])

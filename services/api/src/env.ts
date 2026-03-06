@@ -10,3 +10,8 @@ export const env = {
 export const s3Env = {
   S3_BUCKET: process.env.S3_BUCKET ?? "mtb-assets",
 };
+
+export const securityEnv = {
+  RATE_LIMIT_AUTH_PER_15M: Number(process.env.RATE_LIMIT_AUTH_PER_15M ?? 20),
+  RATE_LIMIT_BOOK_PER_15M: Number(process.env.RATE_LIMIT_BOOK_PER_15M ?? 30),
+};
