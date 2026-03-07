@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 
 type Props = { params: { restaurantId: string } };
@@ -9,16 +8,17 @@ export default function MenuEditor({ params }: Props) {
   const [content, setContent] = useState("");
   const [isPublished, setIsPublished] = useState(false);
   const [msg, setMsg] = useState("");
+  const [msgType, setMsgType] = useState<"success" | "error">("success");
   const [uploadUrl, setUploadUrl] = useState<string | null>(null);
   const [objectKey, setObjectKey] = useState<string | null>(null);
 
   async function load() {
-    setMsg("");
     const res = await fetch(`${api}/admin/restaurants/${params.restaurantId}/menus/MAIN`, { credentials: "include" });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) return setMsg(`Load failed: ${JSON.stringify(data)}`);
-    setContent(data.menu.content ?? "");
-    setIsPublished(Boolean(data.menu.isPublished));
+    if (res.ok) {
+      setContent(data.menu.content ?? "");
+      setIsPublished(Boolean(data.menu.isPublished));
+    }
   }
 
   useEffect(() => { load(); }, []);
@@ -31,9 +31,8 @@ export default function MenuEditor({ params }: Props) {
       credentials: "include",
       body: JSON.stringify({ content, isPublished }),
     });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) return setMsg(`Save failed: ${JSON.stringify(data)}`);
-    setMsg("Saved!");
+    if (!res.ok) { setMsg("Save failed."); setMsgType("error"); return; }
+    setMsg("Menu saved!"); setMsgType("success");
   }
 
   async function initPdfUpload() {
@@ -43,22 +42,17 @@ export default function MenuEditor({ params }: Props) {
       credentials: "include",
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) return setMsg(`Init failed: ${JSON.stringify(data)}`);
-
+    if (!res.ok) { setMsg("Failed to generate upload URL."); setMsgType("error"); return; }
     setUploadUrl(data.upload.uploadUrl);
     setObjectKey(data.upload.objectKey);
-    setMsg("Upload URL generated. Choose a PDF to upload.");
+    setMsg("Upload URL ready. Choose your PDF."); setMsgType("success");
   }
 
   async function uploadPdf(file: File) {
     if (!uploadUrl) return;
     setMsg("");
-    const put = await fetch(uploadUrl, {
-      method: "PUT",
-      headers: { "Content-Type": "application/pdf" },
-      body: file,
-    });
-    if (!put.ok) return setMsg("Upload failed (PUT).");
+    const put = await fetch(uploadUrl, { method: "PUT", headers: { "Content-Type": "application/pdf" }, body: file });
+    if (!put.ok) { setMsg("Upload failed."); setMsgType("error"); return; }
 
     const fin = await fetch(`${api}/admin/restaurants/${params.restaurantId}/menus/MAIN/pdf/finalize`, {
       method: "POST",
@@ -66,39 +60,58 @@ export default function MenuEditor({ params }: Props) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ objectKey }),
     });
-    const finData = await fin.json().catch(() => ({}));
-    if (!fin.ok) return setMsg(`Finalize failed: ${JSON.stringify(finData)}`);
-    setMsg("PDF uploaded and finalized (scan placeholder).");
+    if (!fin.ok) { setMsg("Finalize failed."); setMsgType("error"); return; }
+    setMsg("PDF uploaded successfully!"); setMsgType("success");
+    setUploadUrl(null);
   }
 
   return (
-    <main>
-      <h1>Edit menu</h1>
-      <p><a href={`/admin/restaurants/${params.restaurantId}`}>← Back</a></p>
+    <div className="page">
+      <div className="container" style={{ maxWidth: 720 }}>
+        <a href={`/admin/restaurants/${params.restaurantId}`} className="back-link">← Back</a>
 
-      <div style={{ display: "grid", gap: 10, maxWidth: 760 }}>
-        <label>
-          Published
-          <input type="checkbox" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} style={{ marginLeft: 8 }} />
-        </label>
+        <h1 style={{ marginBottom: 24 }}>Edit Menu</h1>
 
-        <label>
-          Content
-          <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={12} style={{ width: "100%" }} />
-        </label>
+        <div className="card" style={{ marginBottom: 24 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <h3>Content</h3>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: "0.9rem" }}>
+              <input type="checkbox" checked={isPublished} onChange={(e) => setIsPublished(e.target.checked)} />
+              Published
+            </label>
+          </div>
 
-        <button onClick={save}>Save</button>
+          <div className="form-group" style={{ marginBottom: 16 }}>
+            <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={14}
+              placeholder="Enter your menu content here..." style={{ width: "100%", fontFamily: "inherit" }} />
+          </div>
 
-        <hr />
+          <button className="btn btn-primary" onClick={save} style={{ width: "100%" }}>
+            Save Menu
+          </button>
+        </div>
 
-        <h2>Menu PDF</h2>
-        <button onClick={initPdfUpload}>Generate upload URL</button>
-        {uploadUrl ? (
-          <input type="file" accept="application/pdf" onChange={(e) => e.target.files?.[0] && uploadPdf(e.target.files[0])} />
-        ) : null}
+        <div className="card">
+          <h3 style={{ marginBottom: 12 }}>PDF Menu</h3>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginBottom: 16 }}>
+            Upload a PDF version of your menu for guests to download.
+          </p>
 
-        {msg ? <p style={{ marginTop: 8 }}>{msg}</p> : null}
+          {!uploadUrl ? (
+            <button className="btn btn-secondary" onClick={initPdfUpload}>
+              Generate Upload URL
+            </button>
+          ) : (
+            <div className="form-group">
+              <label>Choose PDF File</label>
+              <input type="file" accept="application/pdf"
+                onChange={(e) => e.target.files?.[0] && uploadPdf(e.target.files[0])} />
+            </div>
+          )}
+        </div>
+
+        {msg && <div className={`msg msg-${msgType}`} style={{ marginTop: 16 }}>{msg}</div>}
       </div>
-    </main>
+    </div>
   );
 }
